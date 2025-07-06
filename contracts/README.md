@@ -1,0 +1,1 @@
+# Protocol Buffer contracts for ready-to-go applications
