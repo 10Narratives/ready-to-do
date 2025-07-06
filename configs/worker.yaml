@@ -1,8 +1,0 @@
-general:
-  node_id: "worker_001"
-  environment: "local"
-
-logging:
-  level: "info"
-  log_dir: "/var/ddb/log/"
-  enable_console: true
