@@ -75,14 +75,15 @@ generate_python() {
   mkdir -p "$GEN_DIR"
 
   for file in $(get_proto_files); do
-    protoc \
+    python -m grpc_tools.protoc \
       --proto_path="$PROJECT_DIR" \
       --proto_path="$GOOGLE_APIS_DIR" \
       --python_out="$GEN_DIR" \
+      --grpc_python_out="$GEN_DIR" \
       "$file"
   done
 
-  echo "[Python] ✅ Generated into $GEN_DIR"
+  echo "[Python] ✅ Generated messages and gRPC services into $GEN_DIR"
 }
 
 generate_swagger() {
