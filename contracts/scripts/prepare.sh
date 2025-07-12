@@ -31,6 +31,7 @@ GO_BIN="$HOME/go/bin"
 PLUGIN_PATH_GO="$GO_BIN/protoc-gen-go"
 PLUGIN_PATH_GO_GRPC="$GO_BIN/protoc-gen-go-grpc"
 PLUGIN_PATH_GATEWAY="$GO_BIN/protoc-gen-grpc-gateway"
+PLUGIN_PATH_SWAGGER="$GO_BIN/protoc-gen-openapiv2"
 
 if ! command -v protoc-gen-go &> /dev/null; then
   echo "protoc-gen-go not found. Installing..."
@@ -45,6 +46,11 @@ fi
 if ! command -v protoc-gen-grpc-gateway &> /dev/null; then
   echo "protoc-gen-grpc-gateway not found. Installing..."
   go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@latest
+fi
+
+if ! command -v protoc-gen-openapiv2 &> /dev/null; then
+  echo "protoc-gen-openapiv2 not found. Installing..."
+  go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@latest
 fi
 
 VENDOR_DIR="vendor"
