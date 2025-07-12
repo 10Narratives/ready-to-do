@@ -6,6 +6,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 VENV_DIR="$SCRIPT_DIR/../.py-venv-protoc"
 GO_BIN="$HOME/go/bin"
+
 PLUGIN_PATH_GO="$GO_BIN/protoc-gen-go"
 PLUGIN_PATH_GO_GRPC="$GO_BIN/protoc-gen-go-grpc"
 PLUGIN_PATH_GATEWAY="$GO_BIN/protoc-gen-grpc-gateway"
@@ -18,7 +19,7 @@ if [ ! -d "$VENV_DIR" ]; then
 fi
 source "$VENV_DIR/bin/activate"
 
-for plugin in "$PLUGIN_PATH_GO" "$PLUGIN_PATH_GO_GRPC" "$PLUGIN_PATH_GATEWAY"; do
+for plugin in "$PLUGIN_PATH_GO" "$PLUGIN_PATH_GO_GRPC" "$PLUGIN_PATH_GATEWAY" "$PLUGIN_PATH_SWAGGER"; do
   if [ ! -f "$plugin" ]; then
     echo "❌ Plugin not found: $(basename "$plugin")"
     echo "💡 Run ./scripts/prepare.sh to install it."
@@ -26,13 +27,15 @@ for plugin in "$PLUGIN_PATH_GO" "$PLUGIN_PATH_GO_GRPC" "$PLUGIN_PATH_GATEWAY"; d
   fi
 done
 
-LANGUAGES="go python swagger grpc-gateway"
+LANGUAGES="go python"
+FEATURES="swagger grpc-gateway"
 PACKAGES="$(find "$PROJECT_DIR/proto" -mindepth 1 -maxdepth 1 -type d)"
 GEN_ROOT_DIR="$PROJECT_DIR/gen"
 
 while [[ "$#" -gt 0 ]]; do
   case $1 in
     --lang) LANGUAGES="$2"; shift ;;
+    --feature) FEATURES="$2"; shift ;;
     --pkg) PACKAGES="$2"; shift ;;
     *) echo "Unknown parameter passed: $1"; exit 1 ;;
   esac
@@ -124,10 +127,19 @@ for lang in $LANGUAGES; do
   case "$lang" in
     go) generate_go ;;
     python) generate_python ;;
+    *)
+      echo "❌ Unsupported language: $lang"
+      exit 1
+      ;;
+  esac
+done
+
+for feature in $FEATURES; do
+  case "$feature" in
     swagger) generate_swagger ;;
     grpc-gateway) generate_grpc_gateway ;;
     *)
-      echo "❌ Unsupported language: $lang"
+      echo "❌ Unsupported feature: $feature"
       exit 1
       ;;
   esac
