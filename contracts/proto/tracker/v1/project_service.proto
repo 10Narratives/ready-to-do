@@ -9,7 +9,6 @@ import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/field_mask.proto";
 
-
 service ProjectService {
   rpc ListProjects(ListProjectsRequest) returns (ListProjectsResponse) {
     option (google.api.http) = {
@@ -26,14 +25,14 @@ service ProjectService {
   rpc CreateProject(CreateProjectRequest) returns (Project) {
     option (google.api.http) = {
       post: "/v1alpha1/Projects"
-      body: "Project"
+      body: "project"
     };
   }
 
   rpc UpdateProject(UpdateProjectRequest) returns (Project) {
     option (google.api.http) = {
-      patch: "/v1alpha1/{Project.name=Projects/*}"
-      body: "Project"
+      patch: "/v1alpha1/{project.name=Projects/*}"
+      body: "project"
     };
   }
 
@@ -45,6 +44,9 @@ service ProjectService {
 }
 
 message Project {
+  string name = 1;
+  string display_name = 2;
+  string description = 3;
 }
 
 message ListProjectsRequest {
@@ -69,7 +71,7 @@ message CreateProjectRequest {
 }
 
 message UpdateProjectRequest {
-  Project Project = 1;
+  Project project = 1;
   google.protobuf.FieldMask update_mask = 2;
 }
 

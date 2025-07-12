@@ -2,11 +2,13 @@
 
 set -euo pipefail
 
+# Пути
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 VENV_DIR="$SCRIPT_DIR/../.py-venv-protoc"
 GO_BIN="$HOME/go/bin"
-PLUGIN_PATH="$GO_BIN/protoc-gen-go"
+PLUGIN_PATH_GO="$GO_BIN/protoc-gen-go"
+PLUGIN_PATH_SWAGGER="$GO_BIN/protoc-gen-openapiv2"
 GOOGLE_APIS_DIR="$PROJECT_DIR/vendor/google"
 
 if [ ! -d "$VENV_DIR" ]; then
@@ -15,13 +17,19 @@ if [ ! -d "$VENV_DIR" ]; then
 fi
 source "$VENV_DIR/bin/activate"
 
-if [ ! -f "$PLUGIN_PATH" ]; then
-  echo "❌ protoc-gen-go not found at $PLUGIN_PATH"
+if [ ! -f "$PLUGIN_PATH_GO" ]; then
+  echo "❌ protoc-gen-go not found at $PLUGIN_PATH_GO"
   echo "💡 Run ./scripts/prepare.sh to install it."
   exit 1
 fi
 
-LANGUAGES="go python"
+if [ ! -f "$PLUGIN_PATH_SWAGGER" ]; then
+  echo "❌ protoc-gen-openapiv2 not found at $PLUGIN_PATH_SWAGGER"
+  echo "💡 Run ./scripts/prepare.sh to install it."
+  exit 1
+fi
+
+LANGUAGES="go python swagger"
 PACKAGES="$(find "$PROJECT_DIR/proto" -mindepth 1 -maxdepth 1 -type d)"
 GEN_ROOT_DIR="$PROJECT_DIR/gen"
 
@@ -51,7 +59,7 @@ generate_go() {
       --proto_path="$GOOGLE_APIS_DIR" \
       --go_out="$GEN_DIR" \
       --go_opt=paths=source_relative \
-      --plugin=protoc-gen-go="$PLUGIN_PATH" \
+      --plugin=protoc-gen-go="$PLUGIN_PATH_GO" \
       "$file"
   done
 
@@ -74,6 +82,24 @@ generate_python() {
   echo "[Python] ✅ Generated into $GEN_DIR"
 }
 
+generate_swagger() {
+  GEN_DIR="$GEN_ROOT_DIR/swagger"
+  rm -rf "$GEN_DIR"
+  mkdir -p "$GEN_DIR"
+
+  for file in $(get_proto_files); do
+    protoc \
+      --proto_path="$PROJECT_DIR" \
+      --proto_path="$GOOGLE_APIS_DIR" \
+      --plugin=protoc-gen-openapiv2="$PLUGIN_PATH_SWAGGER" \
+      --openapiv2_out="$GEN_DIR" \
+      --openapiv2_opt=logtostderr=true \
+      "$file"
+  done
+
+  echo "[Swagger] ✅ Generated into $GEN_DIR"
+}
+
 rm -rf "$GEN_ROOT_DIR"
 mkdir -p "$GEN_ROOT_DIR"
 
@@ -81,6 +107,7 @@ for lang in $LANGUAGES; do
   case "$lang" in
     go) generate_go ;;
     python) generate_python ;;
+    swagger) generate_swagger ;;
     *)
       echo "❌ Unsupported language: $lang"
       exit 1

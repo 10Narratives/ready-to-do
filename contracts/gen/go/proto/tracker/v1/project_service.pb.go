@@ -26,6 +26,9 @@ const (
 
 type Project struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
+	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	DisplayName   string                 `protobuf:"bytes,2,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
+	Description   string                 `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -58,6 +61,27 @@ func (x *Project) ProtoReflect() protoreflect.Message {
 // Deprecated: Use Project.ProtoReflect.Descriptor instead.
 func (*Project) Descriptor() ([]byte, []int) {
 	return file_proto_tracker_v1_project_service_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *Project) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *Project) GetDisplayName() string {
+	if x != nil {
+		return x.DisplayName
+	}
+	return ""
+}
+
+func (x *Project) GetDescription() string {
+	if x != nil {
+		return x.Description
+	}
+	return ""
 }
 
 type ListProjectsRequest struct {
@@ -278,7 +302,7 @@ func (x *CreateProjectRequest) GetProject() *Project {
 
 type UpdateProjectRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Project       *Project               `protobuf:"bytes,1,opt,name=Project,proto3" json:"Project,omitempty"`
+	Project       *Project               `protobuf:"bytes,1,opt,name=project,proto3" json:"project,omitempty"`
 	UpdateMask    *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -377,8 +401,11 @@ var File_proto_tracker_v1_project_service_proto protoreflect.FileDescriptor
 const file_proto_tracker_v1_project_service_proto_rawDesc = "" +
 	"\n" +
 	"&proto/tracker/v1/project_service.proto\x12\n" +
-	"tracker.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\t\n" +
-	"\aProject\"i\n" +
+	"tracker.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"b\n" +
+	"\aProject\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12!\n" +
+	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12 \n" +
+	"\vdescription\x18\x03 \x01(\tR\vdescription\"i\n" +
 	"\x13ListProjectsRequest\x12\x16\n" +
 	"\x06parent\x18\x01 \x01(\tR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
@@ -395,7 +422,7 @@ const file_proto_tracker_v1_project_service_proto_rawDesc = "" +
 	"project_id\x18\x02 \x01(\tR\tprojectId\x12-\n" +
 	"\aproject\x18\x03 \x01(\v2\x13.tracker.v1.ProjectR\aproject\"\x82\x01\n" +
 	"\x14UpdateProjectRequest\x12-\n" +
-	"\aProject\x18\x01 \x01(\v2\x13.tracker.v1.ProjectR\aProject\x12;\n" +
+	"\aproject\x18\x01 \x01(\v2\x13.tracker.v1.ProjectR\aproject\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
 	"updateMask\"*\n" +
 	"\x14DeleteProjectRequest\x12\x12\n" +
@@ -404,8 +431,8 @@ const file_proto_tracker_v1_project_service_proto_rawDesc = "" +
 	"\fListProjects\x12\x1f.tracker.v1.ListProjectsRequest\x1a .tracker.v1.ListProjectsResponse\"\x1a\x82\xd3\xe4\x93\x02\x14\x12\x12/v1alpha1/Projects\x12e\n" +
 	"\n" +
 	"GetProject\x12\x1d.tracker.v1.GetProjectRequest\x1a\x13.tracker.v1.Project\"#\x82\xd3\xe4\x93\x02\x1d\x12\x1b/v1alpha1/{name=Projects/*}\x12k\n" +
-	"\rCreateProject\x12 .tracker.v1.CreateProjectRequest\x1a\x13.tracker.v1.Project\"#\x82\xd3\xe4\x93\x02\x1d:\aProject\"\x12/v1alpha1/Projects\x12|\n" +
-	"\rUpdateProject\x12 .tracker.v1.UpdateProjectRequest\x1a\x13.tracker.v1.Project\"4\x82\xd3\xe4\x93\x02.:\aProject2#/v1alpha1/{Project.name=Projects/*}\x12n\n" +
+	"\rCreateProject\x12 .tracker.v1.CreateProjectRequest\x1a\x13.tracker.v1.Project\"#\x82\xd3\xe4\x93\x02\x1d:\aproject\"\x12/v1alpha1/Projects\x12|\n" +
+	"\rUpdateProject\x12 .tracker.v1.UpdateProjectRequest\x1a\x13.tracker.v1.Project\"4\x82\xd3\xe4\x93\x02.:\aproject2#/v1alpha1/{project.name=Projects/*}\x12n\n" +
 	"\rDeleteProject\x12 .tracker.v1.DeleteProjectRequest\x1a\x16.google.protobuf.Empty\"#\x82\xd3\xe4\x93\x02\x1d*\x1b/v1alpha1/{name=Projects/*}BKZIgithub.com/10Narratives/ready-to-do/contracts/gen/go/tracker/v1;trackerv1b\x06proto3"
 
 var (
@@ -435,7 +462,7 @@ var file_proto_tracker_v1_project_service_proto_goTypes = []any{
 var file_proto_tracker_v1_project_service_proto_depIdxs = []int32{
 	0, // 0: tracker.v1.ListProjectsResponse.projects:type_name -> tracker.v1.Project
 	0, // 1: tracker.v1.CreateProjectRequest.project:type_name -> tracker.v1.Project
-	0, // 2: tracker.v1.UpdateProjectRequest.Project:type_name -> tracker.v1.Project
+	0, // 2: tracker.v1.UpdateProjectRequest.project:type_name -> tracker.v1.Project
 	7, // 3: tracker.v1.UpdateProjectRequest.update_mask:type_name -> google.protobuf.FieldMask
 	1, // 4: tracker.v1.ProjectService.ListProjects:input_type -> tracker.v1.ListProjectsRequest
 	3, // 5: tracker.v1.ProjectService.GetProject:input_type -> tracker.v1.GetProjectRequest
