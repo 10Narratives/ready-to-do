@@ -7,6 +7,7 @@ PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 VENV_DIR="$SCRIPT_DIR/../.py-venv-protoc"
 GO_BIN="$HOME/go/bin"
 PLUGIN_PATH="$GO_BIN/protoc-gen-go"
+GOOGLE_APIS_DIR="$PROJECT_DIR/vendor/google"
 
 if [ ! -d "$VENV_DIR" ]; then
   echo "❌ Virtual environment not found. Run ./scripts/prepare.sh first."
@@ -47,6 +48,7 @@ generate_go() {
   for file in $(get_proto_files); do
     protoc \
       --proto_path="$PROJECT_DIR" \
+      --proto_path="$GOOGLE_APIS_DIR" \
       --go_out="$GEN_DIR" \
       --go_opt=paths=source_relative \
       --plugin=protoc-gen-go="$PLUGIN_PATH" \
@@ -64,6 +66,7 @@ generate_python() {
   for file in $(get_proto_files); do
     protoc \
       --proto_path="$PROJECT_DIR" \
+      --proto_path="$GOOGLE_APIS_DIR" \
       --python_out="$GEN_DIR" \
       "$file"
   done

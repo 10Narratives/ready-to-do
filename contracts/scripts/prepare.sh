@@ -31,8 +31,6 @@ PLUGIN_PATH="$GO_BIN/protoc-gen-go"
 
 if ! command -v protoc-gen-go &> /dev/null; then
   echo "protoc-gen-go not found. Installing..."
-  echo "Go will be used to install the plugin."
-
   if ! command -v go &> /dev/null; then
     echo "❌ Go not found. Please install Go first: https://go.dev/dl/ "
     exit 1
@@ -43,7 +41,15 @@ if ! command -v protoc-gen-go &> /dev/null; then
   echo "✅ protoc-gen-go installed to $PLUGIN_PATH"
 fi
 
-export PATH="$GO_BIN:$PATH"
+VENDOR_DIR="vendor"
+GOOGLE_APIS_DIR="$VENDOR_DIR/google"
+
+if [ ! -d "$GOOGLE_APIS_DIR" ]; then
+  echo "📦 Cloning googleapis into $GOOGLE_APIS_DIR..."
+  git clone --depth=1 https://github.com/googleapis/googleapis.git  "$GOOGLE_APIS_DIR"
+else
+  echo "📦 googleapis already exists in $GOOGLE_APIS_DIR"
+fi
 
 VENV_DIR=".py-venv-protoc"
 rm -rf "$VENV_DIR"
@@ -52,5 +58,7 @@ source "$VENV_DIR/bin/activate"
 
 echo "Installing Python protobuf tools..."
 pip install --no-cache-dir protobuf grpcio-tools
+
+export PATH="$GO_BIN:$PATH"
 
 echo "✅ Environment is ready!"

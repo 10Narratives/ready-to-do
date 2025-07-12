@@ -22,9 +22,12 @@ _runtime_version.ValidateProtobufRuntimeVersion(
 _sym_db = _symbol_database.Default()
 
 
+from google.api import annotations_pb2 as google_dot_api_dot_annotations__pb2
+from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
+from google.protobuf import field_mask_pb2 as google_dot_protobuf_dot_field__mask__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n&proto/tracker/v1/project_service.proto\x12\ntracker.v12\x10\n\x0eProjectServiceBKZIgithub.com/10Narratives/ready-to-do/contracts/gen/go/tracker/v1;trackerv1b\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n&proto/tracker/v1/project_service.proto\x12\ntracker.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\t\n\x07Project\"L\n\x13ListProjectsRequest\x12\x0e\n\x06parent\x18\x01 \x01(\t\x12\x11\n\tpage_size\x18\x02 \x01(\x05\x12\x12\n\npage_token\x18\x03 \x01(\t\"V\n\x14ListProjectsResponse\x12%\n\x08projects\x18\x01 \x03(\x0b\x32\x13.tracker.v1.Project\x12\x17\n\x0fnext_page_token\x18\x02 \x01(\t\"!\n\x11GetProjectRequest\x12\x0c\n\x04name\x18\x01 \x01(\t\"`\n\x14\x43reateProjectRequest\x12\x0e\n\x06parent\x18\x01 \x01(\t\x12\x12\n\nproject_id\x18\x02 \x01(\t\x12$\n\x07project\x18\x03 \x01(\x0b\x32\x13.tracker.v1.Project\"m\n\x14UpdateProjectRequest\x12$\n\x07Project\x18\x01 \x01(\x0b\x32\x13.tracker.v1.Project\x12/\n\x0bupdate_mask\x18\x02 \x01(\x0b\x32\x1a.google.protobuf.FieldMask\"$\n\x14\x44\x65leteProjectRequest\x12\x0c\n\x04name\x18\x01 \x01(\t2\xc1\x04\n\x0eProjectService\x12m\n\x0cListProjects\x12\x1f.tracker.v1.ListProjectsRequest\x1a .tracker.v1.ListProjectsResponse\"\x1a\x82\xd3\xe4\x93\x02\x14\x12\x12/v1alpha1/Projects\x12\x65\n\nGetProject\x12\x1d.tracker.v1.GetProjectRequest\x1a\x13.tracker.v1.Project\"#\x82\xd3\xe4\x93\x02\x1d\x12\x1b/v1alpha1/{name=Projects/*}\x12k\n\rCreateProject\x12 .tracker.v1.CreateProjectRequest\x1a\x13.tracker.v1.Project\"#\x82\xd3\xe4\x93\x02\x1d\"\x12/v1alpha1/Projects:\x07Project\x12|\n\rUpdateProject\x12 .tracker.v1.UpdateProjectRequest\x1a\x13.tracker.v1.Project\"4\x82\xd3\xe4\x93\x02.2#/v1alpha1/{Project.name=Projects/*}:\x07Project\x12n\n\rDeleteProject\x12 .tracker.v1.DeleteProjectRequest\x1a\x16.google.protobuf.Empty\"#\x82\xd3\xe4\x93\x02\x1d*\x1b/v1alpha1/{name=Projects/*}BKZIgithub.com/10Narratives/ready-to-do/contracts/gen/go/tracker/v1;trackerv1b\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -32,6 +35,30 @@ _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'proto.tracker.v1.project_se
 if not _descriptor._USE_C_DESCRIPTORS:
   _globals['DESCRIPTOR']._loaded_options = None
   _globals['DESCRIPTOR']._serialized_options = b'ZIgithub.com/10Narratives/ready-to-do/contracts/gen/go/tracker/v1;trackerv1'
-  _globals['_PROJECTSERVICE']._serialized_start=54
-  _globals['_PROJECTSERVICE']._serialized_end=70
+  _globals['_PROJECTSERVICE'].methods_by_name['ListProjects']._loaded_options = None
+  _globals['_PROJECTSERVICE'].methods_by_name['ListProjects']._serialized_options = b'\202\323\344\223\002\024\022\022/v1alpha1/Projects'
+  _globals['_PROJECTSERVICE'].methods_by_name['GetProject']._loaded_options = None
+  _globals['_PROJECTSERVICE'].methods_by_name['GetProject']._serialized_options = b'\202\323\344\223\002\035\022\033/v1alpha1/{name=Projects/*}'
+  _globals['_PROJECTSERVICE'].methods_by_name['CreateProject']._loaded_options = None
+  _globals['_PROJECTSERVICE'].methods_by_name['CreateProject']._serialized_options = b'\202\323\344\223\002\035\"\022/v1alpha1/Projects:\007Project'
+  _globals['_PROJECTSERVICE'].methods_by_name['UpdateProject']._loaded_options = None
+  _globals['_PROJECTSERVICE'].methods_by_name['UpdateProject']._serialized_options = b'\202\323\344\223\002.2#/v1alpha1/{Project.name=Projects/*}:\007Project'
+  _globals['_PROJECTSERVICE'].methods_by_name['DeleteProject']._loaded_options = None
+  _globals['_PROJECTSERVICE'].methods_by_name['DeleteProject']._serialized_options = b'\202\323\344\223\002\035*\033/v1alpha1/{name=Projects/*}'
+  _globals['_PROJECT']._serialized_start=147
+  _globals['_PROJECT']._serialized_end=156
+  _globals['_LISTPROJECTSREQUEST']._serialized_start=158
+  _globals['_LISTPROJECTSREQUEST']._serialized_end=234
+  _globals['_LISTPROJECTSRESPONSE']._serialized_start=236
+  _globals['_LISTPROJECTSRESPONSE']._serialized_end=322
+  _globals['_GETPROJECTREQUEST']._serialized_start=324
+  _globals['_GETPROJECTREQUEST']._serialized_end=357
+  _globals['_CREATEPROJECTREQUEST']._serialized_start=359
+  _globals['_CREATEPROJECTREQUEST']._serialized_end=455
+  _globals['_UPDATEPROJECTREQUEST']._serialized_start=457
+  _globals['_UPDATEPROJECTREQUEST']._serialized_end=566
+  _globals['_DELETEPROJECTREQUEST']._serialized_start=568
+  _globals['_DELETEPROJECTREQUEST']._serialized_end=604
+  _globals['_PROJECTSERVICE']._serialized_start=607
+  _globals['_PROJECTSERVICE']._serialized_end=1184
 # @@protoc_insertion_point(module_scope)
