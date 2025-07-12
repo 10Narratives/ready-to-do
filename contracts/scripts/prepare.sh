@@ -28,39 +28,43 @@ fi
 
 GO_BIN="$HOME/go/bin"
 
-PLUGIN_PATH_GO="$GO_BIN/protoc-gen-go"
-PLUGIN_PATH_GO_GRPC="$GO_BIN/protoc-gen-go-grpc"
-PLUGIN_PATH_GATEWAY="$GO_BIN/protoc-gen-grpc-gateway"
-PLUGIN_PATH_SWAGGER="$GO_BIN/protoc-gen-openapiv2"
 
-if ! command -v protoc-gen-go &> /dev/null; then
-  echo "protoc-gen-go not found. Installing..."
-  go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
-fi
+PLUGINS=(
+  "protoc-gen-go:google.golang.org/protobuf/cmd/protoc-gen-go@latest"
+  "protoc-gen-go-grpc:google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest"
+  "protoc-gen-grpc-gateway:github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@latest"
+  "protoc-gen-openapiv2:github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@latest"
+  "protoc-gen-validate:github.com/envoyproxy/protoc-gen-validate@latest"
+)
 
-if ! command -v protoc-gen-go-grpc &> /dev/null; then
-  echo "protoc-gen-go-grpc not found. Installing..."
-  go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
-fi
-
-if ! command -v protoc-gen-grpc-gateway &> /dev/null; then
-  echo "protoc-gen-grpc-gateway not found. Installing..."
-  go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@latest
-fi
-
-if ! command -v protoc-gen-openapiv2 &> /dev/null; then
-  echo "protoc-gen-openapiv2 not found. Installing..."
-  go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@latest
-fi
+for plugin in "${PLUGINS[@]}"; do
+  name=${plugin%%:*}
+  pkg=${plugin#*:}
+  if ! command -v $name &> /dev/null; then
+    echo "Installing $name..."
+    go install $pkg
+  else
+    echo "$name is already installed"
+  fi
+done
 
 VENDOR_DIR="vendor"
-GOOGLE_APIS_DIR="$VENDOR_DIR/google"
+mkdir -p "$VENDOR_DIR"
 
+GOOGLE_APIS_DIR="$VENDOR_DIR/google"
 if [ ! -d "$GOOGLE_APIS_DIR" ]; then
   echo "📦 Cloning googleapis into $GOOGLE_APIS_DIR..."
-  git clone --depth=1 https://github.com/googleapis/googleapis.git  "$GOOGLE_APIS_DIR"
+  git clone --depth=1 https://github.com/googleapis/googleapis.git "$GOOGLE_APIS_DIR"
 else
   echo "📦 googleapis already exists in $GOOGLE_APIS_DIR"
+fi
+
+VALIDATE_DIR="$VENDOR_DIR/protoc-gen-validate"
+if [ ! -d "$VALIDATE_DIR" ]; then
+  echo "📦 Cloning protoc-gen-validate into $VALIDATE_DIR..."
+  git clone --depth=1 https://github.com/envoyproxy/protoc-gen-validate.git "$VALIDATE_DIR"
+else
+  echo "📦 protoc-gen-validate already exists in $VALIDATE_DIR"
 fi
 
 VENV_DIR=".py-venv-protoc"

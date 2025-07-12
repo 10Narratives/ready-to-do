@@ -7,11 +7,13 @@ PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 VENV_DIR="$SCRIPT_DIR/../.py-venv-protoc"
 GO_BIN="$HOME/go/bin"
 
-PLUGIN_PATH_GO="$GO_BIN/protoc-gen-go"
-PLUGIN_PATH_GO_GRPC="$GO_BIN/protoc-gen-go-grpc"
-PLUGIN_PATH_GATEWAY="$GO_BIN/protoc-gen-grpc-gateway"
-PLUGIN_PATH_SWAGGER="$GO_BIN/protoc-gen-openapiv2"
-GOOGLE_APIS_DIR="$PROJECT_DIR/vendor/google"
+PLUGIN_PATHS=(
+  "go:$GO_BIN/protoc-gen-go"
+  "go-grpc:$GO_BIN/protoc-gen-go-grpc"
+  "gateway:$GO_BIN/protoc-gen-grpc-gateway"
+  "swagger:$GO_BIN/protoc-gen-openapiv2"
+  "validate:$GO_BIN/protoc-gen-validate"
+)
 
 if [ ! -d "$VENV_DIR" ]; then
   echo "❌ Virtual environment not found. Run ./scripts/prepare.sh first."
@@ -19,9 +21,22 @@ if [ ! -d "$VENV_DIR" ]; then
 fi
 source "$VENV_DIR/bin/activate"
 
-for plugin in "$PLUGIN_PATH_GO" "$PLUGIN_PATH_GO_GRPC" "$PLUGIN_PATH_GATEWAY" "$PLUGIN_PATH_SWAGGER"; do
-  if [ ! -f "$plugin" ]; then
-    echo "❌ Plugin not found: $(basename "$plugin")"
+for plugin in "${PLUGIN_PATHS[@]}"; do
+  name=${plugin%%:*}
+  path=${plugin#*:}
+  if [ ! -f "$path" ]; then
+    echo "❌ Plugin not found: protoc-gen-$name ($path)"
+    echo "💡 Run ./scripts/prepare.sh to install it."
+    exit 1
+  fi
+done
+
+GOOGLE_APIS_DIR="$PROJECT_DIR/vendor/google"
+VALIDATE_DIR="$PROJECT_DIR/vendor/protoc-gen-validate"
+
+for dir in "$GOOGLE_APIS_DIR" "$VALIDATE_DIR"; do
+  if [ ! -d "$dir" ]; then
+    echo "❌ Dependency not found: $dir"
     echo "💡 Run ./scripts/prepare.sh to install it."
     exit 1
   fi
@@ -57,16 +72,20 @@ generate_go() {
     protoc \
       --proto_path="$PROJECT_DIR" \
       --proto_path="$GOOGLE_APIS_DIR" \
+      --proto_path="$VALIDATE_DIR" \
       --go_out="$GEN_DIR" \
       --go_opt=paths=source_relative \
       --go-grpc_out="$GEN_DIR" \
       --go-grpc_opt=paths=source_relative \
-      --plugin=protoc-gen-go="$PLUGIN_PATH_GO" \
-      --plugin=protoc-gen-go-grpc="$PLUGIN_PATH_GO_GRPC" \
+      --validate_out="lang=go:$GEN_DIR" \
+      --validate_opt=paths=source_relative \
+      --plugin=protoc-gen-go="$GO_BIN/protoc-gen-go" \
+      --plugin=protoc-gen-go-grpc="$GO_BIN/protoc-gen-go-grpc" \
+      --plugin=protoc-gen-validate="$GO_BIN/protoc-gen-validate" \
       "$file"
   done
 
-  echo "[Go] ✅ Generated into $GEN_DIR"
+  echo "[Go] ✅ Generated into $GEN_DIR (with validation)"
 }
 
 generate_python() {
@@ -78,6 +97,7 @@ generate_python() {
     python -m grpc_tools.protoc \
       --proto_path="$PROJECT_DIR" \
       --proto_path="$GOOGLE_APIS_DIR" \
+      --proto_path="$VALIDATE_DIR" \
       --python_out="$GEN_DIR" \
       --grpc_python_out="$GEN_DIR" \
       "$file"
@@ -95,7 +115,8 @@ generate_swagger() {
     protoc \
       --proto_path="$PROJECT_DIR" \
       --proto_path="$GOOGLE_APIS_DIR" \
-      --plugin=protoc-gen-openapiv2="$PLUGIN_PATH_SWAGGER" \
+      --proto_path="$VALIDATE_DIR" \
+      --plugin=protoc-gen-openapiv2="$GO_BIN/protoc-gen-openapiv2" \
       --openapiv2_out="$GEN_DIR" \
       --openapiv2_opt=logtostderr=true \
       "$file"
@@ -113,11 +134,12 @@ generate_grpc_gateway() {
     protoc \
       --proto_path="$PROJECT_DIR" \
       --proto_path="$GOOGLE_APIS_DIR" \
+      --proto_path="$VALIDATE_DIR" \
       --grpc-gateway_out="$GEN_DIR" \
       --grpc-gateway_opt=logtostderr=true \
       --grpc-gateway_opt=paths=source_relative \
       --grpc-gateway_opt=generate_unbound_methods=true \
-      --plugin=protoc-gen-grpc-gateway="$PLUGIN_PATH_GATEWAY" \
+      --plugin=protoc-gen-grpc-gateway="$GO_BIN/protoc-gen-grpc-gateway" \
       "$file"
   done
 
