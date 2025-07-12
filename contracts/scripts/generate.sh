@@ -2,12 +2,13 @@
 
 set -euo pipefail
 
-# Пути
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 VENV_DIR="$SCRIPT_DIR/../.py-venv-protoc"
 GO_BIN="$HOME/go/bin"
 PLUGIN_PATH_GO="$GO_BIN/protoc-gen-go"
+PLUGIN_PATH_GO_GRPC="$GO_BIN/protoc-gen-go-grpc"
+PLUGIN_PATH_GATEWAY="$GO_BIN/protoc-gen-grpc-gateway"
 PLUGIN_PATH_SWAGGER="$GO_BIN/protoc-gen-openapiv2"
 GOOGLE_APIS_DIR="$PROJECT_DIR/vendor/google"
 
@@ -17,19 +18,15 @@ if [ ! -d "$VENV_DIR" ]; then
 fi
 source "$VENV_DIR/bin/activate"
 
-if [ ! -f "$PLUGIN_PATH_GO" ]; then
-  echo "❌ protoc-gen-go not found at $PLUGIN_PATH_GO"
-  echo "💡 Run ./scripts/prepare.sh to install it."
-  exit 1
-fi
+for plugin in "$PLUGIN_PATH_GO" "$PLUGIN_PATH_GO_GRPC" "$PLUGIN_PATH_GATEWAY"; do
+  if [ ! -f "$plugin" ]; then
+    echo "❌ Plugin not found: $(basename "$plugin")"
+    echo "💡 Run ./scripts/prepare.sh to install it."
+    exit 1
+  fi
+done
 
-if [ ! -f "$PLUGIN_PATH_SWAGGER" ]; then
-  echo "❌ protoc-gen-openapiv2 not found at $PLUGIN_PATH_SWAGGER"
-  echo "💡 Run ./scripts/prepare.sh to install it."
-  exit 1
-fi
-
-LANGUAGES="go python swagger"
+LANGUAGES="go python swagger grpc-gateway"
 PACKAGES="$(find "$PROJECT_DIR/proto" -mindepth 1 -maxdepth 1 -type d)"
 GEN_ROOT_DIR="$PROJECT_DIR/gen"
 
@@ -59,7 +56,10 @@ generate_go() {
       --proto_path="$GOOGLE_APIS_DIR" \
       --go_out="$GEN_DIR" \
       --go_opt=paths=source_relative \
+      --go-grpc_out="$GEN_DIR" \
+      --go-grpc_opt=paths=source_relative \
       --plugin=protoc-gen-go="$PLUGIN_PATH_GO" \
+      --plugin=protoc-gen-go-grpc="$PLUGIN_PATH_GO_GRPC" \
       "$file"
   done
 
@@ -100,14 +100,32 @@ generate_swagger() {
   echo "[Swagger] ✅ Generated into $GEN_DIR"
 }
 
-rm -rf "$GEN_ROOT_DIR"
-mkdir -p "$GEN_ROOT_DIR"
+generate_grpc_gateway() {
+  GEN_DIR="$GEN_ROOT_DIR/grpc-gateway"
+  rm -rf "$GEN_DIR"
+  mkdir -p "$GEN_DIR"
+
+  for file in $(get_proto_files); do
+    protoc \
+      --proto_path="$PROJECT_DIR" \
+      --proto_path="$GOOGLE_APIS_DIR" \
+      --grpc-gateway_out="$GEN_DIR" \
+      --grpc-gateway_opt=logtostderr=true \
+      --grpc-gateway_opt=paths=source_relative \
+      --grpc-gateway_opt=generate_unbound_methods=true \
+      --plugin=protoc-gen-grpc-gateway="$PLUGIN_PATH_GATEWAY" \
+      "$file"
+  done
+
+  echo "[gRPC-Gateway] ✅ Generated into $GEN_DIR"
+}
 
 for lang in $LANGUAGES; do
   case "$lang" in
     go) generate_go ;;
     python) generate_python ;;
     swagger) generate_swagger ;;
+    grpc-gateway) generate_grpc_gateway ;;
     *)
       echo "❌ Unsupported language: $lang"
       exit 1

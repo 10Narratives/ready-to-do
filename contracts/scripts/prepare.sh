@@ -27,25 +27,24 @@ else
 fi
 
 GO_BIN="$HOME/go/bin"
+
 PLUGIN_PATH_GO="$GO_BIN/protoc-gen-go"
+PLUGIN_PATH_GO_GRPC="$GO_BIN/protoc-gen-go-grpc"
+PLUGIN_PATH_GATEWAY="$GO_BIN/protoc-gen-grpc-gateway"
 
 if ! command -v protoc-gen-go &> /dev/null; then
   echo "protoc-gen-go not found. Installing..."
-  if ! command -v go &> /dev/null; then
-    echo "❌ Go not found. Please install Go first: https://go.dev/dl/ "
-    exit 1
-  fi
-
-  mkdir -p "$GO_BIN"
   go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
-  echo "✅ protoc-gen-go installed to $PLUGIN_PATH_GO"
 fi
 
-PLUGIN_PATH_SWAGGER="$GO_BIN/protoc-gen-openapiv2"
-if ! command -v protoc-gen-openapiv2 &> /dev/null; then
-  echo "protoc-gen-openapiv2 not found. Installing..."
-  go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@latest
-  echo "✅ protoc-gen-openapiv2 installed to $PLUGIN_PATH_SWAGGER"
+if ! command -v protoc-gen-go-grpc &> /dev/null; then
+  echo "protoc-gen-go-grpc not found. Installing..."
+  go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+fi
+
+if ! command -v protoc-gen-grpc-gateway &> /dev/null; then
+  echo "protoc-gen-grpc-gateway not found. Installing..."
+  go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@latest
 fi
 
 VENDOR_DIR="vendor"
