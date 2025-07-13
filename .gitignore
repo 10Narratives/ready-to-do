@@ -80,3 +80,6 @@ build/
 # Miscellaneous
 .env
 .flaskenv
+
+# Generated artifacts
+contracts/gen
