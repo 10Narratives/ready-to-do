@@ -10,6 +10,7 @@ pkg/
 # For Go modules, the module cache
 go.mod.sum
 go.sum
+go.work.sum
 
 # Dependency directories (if not using Go modules or for specific setups)
 vendor/
@@ -83,3 +84,6 @@ build/
 
 # Generated artifacts
 contracts/gen
+
+# Server configuration files examples
+!server/config/*.example.yaml

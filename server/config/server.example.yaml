@@ -1,0 +1,114 @@
+# server.example.yaml - Example configuration for the application server
+
+# Transport layer configuration (gRPC and HTTP Gateway)
+transport:
+  # gRPC server configuration
+  grpc:
+    # Network interface binding
+    host: "0.0.0.0" # Listen on all interfaces (use 127.0.0.1 for local-only)
+    port: 50051 # Default gRPC port (1-65535)
+
+    # Connection management
+    max_connection_age: "30m" # Maximum lifetime of a connection
+    max_connection_age_grace: "5m" # Grace period for closing connections
+    max_concurrent_streams: 1000 # Maximum concurrent RPC streams
+    max_recv_msg_size: 4194304 # 4MB maximum message size (in bytes)
+    max_send_msg_size: 4194304 # 4MB maximum message size (in bytes)
+
+    # Keepalive enforcement policies
+    keepalive:
+      enforcement_policy:
+        min_time: "10s" # Minimum allowed client ping interval
+        permit_without_stream: true # Allow pings without active streams
+      server_parameters:
+        max_connection_idle: "15m" # Max idle time before closing connection
+        time: "2h" # Ping frequency if idle
+        timeout: "20s" # Wait time for ping acknowledgement
+
+    # TLS configuration (required for production)
+    tls:
+      enabled: true # Enable TLS encryption
+      cert_file: "/etc/ssl/certs/server.crt" # Server certificate (REQUIRED)
+      key_file: "/etc/ssl/private/server.key" # Private key (REQUIRED)
+      client_ca_file: "/etc/ssl/certs/ca.crt" # Client CA for mTLS (REQUIRED)
+
+    # Health check configuration
+    health:
+      enabled: true # Enable health check service
+      service_name: "ready_to_do" # Custom health check name
+
+    # Reflection API (useful for development)
+    reflection:
+      enabled: true # Enable gRPC reflection service
+
+    # Logging configuration
+    logging:
+      level: "info" # Log level (debug, info, warn, error)
+      format: "json" # Log format (json or text)
+      output: "stdout" # Output destination (stdout or file path)
+
+    # Graceful shutdown settings
+    shutdown:
+      grace_period: "30s" # Wait for active RPCs to complete
+      timeout: "10s" # Force shutdown after this duration
+
+  # HTTP Gateway configuration (gRPC-JSON transcoding)
+  gateway:
+    host: "0.0.0.0" # Network interface binding
+    port: 8080 # HTTP port (1-65535)
+
+    # HTTP server tuning
+    http:
+      read_timeout: "15s" # Maximum request read duration
+      write_timeout: "15s" # Maximum response write duration
+      idle_timeout: "60s" # Keep-alive timeout
+      max_header_bytes: 1048576 # 1MB max header size (in bytes)
+
+    # CORS configuration
+    cors:
+      allowed_origins: ["*"] # Allowed origins (* for any)
+      allowed_methods: ["GET", "POST", "PUT", "DELETE", "PATCH"] # HTTP methods
+      allowed_headers: ["content-type", "authorization", "x-grpc-web"] # Headers
+      allow_credentials: true # Allow credentials/cookies
+      max_age: "12h" # Cache preflight requests
+
+    # JSON marshaling options
+    marshaler:
+      emit_defaults: false # Omit zero-value fields
+      enums_as_ints: false # Serialize enums as strings
+      orig_name: true # Use original proto field names
+
+    # Gateway TLS (recommended for production)
+    tls:
+      enabled: true # Enable HTTPS
+      cert_file: "/etc/ssl/certs/gateway.crt" # Certificate file (optional)
+      key_file: "/etc/ssl/private/gateway.key" # Private key file (optional)
+
+    # Graceful shutdown
+    shutdown:
+      grace_period: "30s" # Wait for active requests
+      timeout: "10s" # Force shutdown timeout
+
+# Database configuration (PostgreSQL)
+database:
+  # Connection parameters
+  host: "db.example.com" # Database server host
+  port: "5432" # Database port (default: 5432)
+  user: "app_user" # Database user
+  password: "secure_password_123" # Database password (REQUIRED)
+  dbname: "app_db" # Database name
+  sslmode: "verify-full" # SSL mode (verify-full for production)
+
+  # Connection pool settings
+  pool:
+    max_conns: 20 # Maximum pool connections
+    min_conns: 2 # Minimum idle connections
+    max_conn_lifetime: "30m" # Maximum connection lifetime
+    max_conn_idle_time: "5m" # Maximum idle time
+    health_check_period: "1m" # Health check interval
+
+  # Operation timeouts
+  timeouts:
+    connect: "5s" # Connection timeout
+    query: "30s" # Query execution timeout
+    exec: "30s" # Write operation timeout
