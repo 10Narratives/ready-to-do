@@ -2,24 +2,23 @@
 // It supports YAML configuration with environment variable overrides.
 package databasecfg
 
-import "time"
+import (
+	"time"
+
+	commoncfg "github.com/10Narratives/ready-to-do/server/internal/config/common"
+)
 
 // Config represents the root database configuration structure.
 type Config struct {
-	Database Database `yaml:"database"`
-}
-
-// Database contains PostgreSQL connection configuration.
-type Database struct {
-	Host     string `yaml:"host" env-default:"localhost"`
-	Port     int    `yaml:"port" env-default:"5432"`
-	User     string `yaml:"user" env-default:"postgres"`
-	Password string `yaml:"password" env-required:"true"`
-	DBName   string `yaml:"dbname" env-default:"app_db"`
-	SSLMode  string `yaml:"sslmode" env-default:"verify-full"`
-
-	Pool     Pool     `yaml:"pool"`
-	Timeouts Timeouts `yaml:"timeouts"`
+	Host     string            `yaml:"host" env-default:"localhost"`
+	Port     int               `yaml:"port" env-default:"5432"`
+	User     string            `yaml:"user" env-default:"postgres"`
+	Password string            `yaml:"password" env-required:"true"`
+	DBName   string            `yaml:"dbname" env-default:"app_db"`
+	SSLMode  string            `yaml:"sslmode" env-default:"verify-full"`
+	Pool     Pool              `yaml:"pool"`
+	Timeouts Timeouts          `yaml:"timeouts"`
+	Logging  commoncfg.Logging `yaml:"logging"`
 }
 
 // Pool contains connection pool settings.

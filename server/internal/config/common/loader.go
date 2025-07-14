@@ -1,4 +1,4 @@
-package utilscfg
+package commoncfg
 
 import (
 	"flag"

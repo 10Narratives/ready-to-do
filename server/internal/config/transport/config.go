@@ -2,7 +2,11 @@
 // It supports YAML configuration with environment variable overrides.
 package transportcfg
 
-import "time"
+import (
+	"time"
+
+	commoncfg "github.com/10Narratives/ready-to-do/server/internal/config/common"
+)
 
 // Config represents the root transport configuration structure.
 type Config struct {
@@ -21,29 +25,30 @@ type Cors struct {
 
 // Gateway contains HTTP gateway configuration for gRPC-JSON transcoding.
 type Gateway struct {
-	Host       string     `yaml:"host" env-required:"true"`
-	Port       uint       `yaml:"port" env-required:"true"`
-	HTTP       HTTP       `yaml:"http"`      // HTTP server settings
-	Cors       Cors       `yaml:"cors"`      // CORS configuration
-	Marshaler  Marshaler  `yaml:"marshaler"` // Response marshaling options
-	GatewayTLS GatewayTLS `yaml:"tls"`       // TLS configuration
-	Shutdown   Shutdown   `yaml:"shutdown"`  // Graceful shutdown settings
+	Host       string            `yaml:"host" env-required:"true"`
+	Port       uint              `yaml:"port" env-required:"true"`
+	HTTP       HTTP              `yaml:"http"`      // HTTP server settings
+	Cors       Cors              `yaml:"cors"`      // CORS configuration
+	Marshaler  Marshaler         `yaml:"marshaler"` // Response marshaling options
+	GatewayTLS GatewayTLS        `yaml:"tls"`       // TLS configuration
+	Shutdown   Shutdown          `yaml:"shutdown"`  // Graceful shutdown settings
+	Logging    commoncfg.Logging `yaml:"logging"`   // Logging settings
 }
 
 // GRPC contains gRPC server configuration.
 type GRPC struct {
-	Host                  string        `yaml:"host" env-required:"true"`
-	Port                  uint          `yaml:"port" env-required:"true"`
-	MaxConnectionAge      time.Duration `yaml:"max_connection_age" env-default:"30m"`
-	MaxConnectionAgeGrace time.Duration `yaml:"max_connection_grace" env-default:"5m"`
-	MaxConcurrentStreams  uint          `yaml:"max_concurrent_streams" env-default:"1000"`
-	MaxRecvMsgSize        uint          `yaml:"max_recv_msg_size" env-default:"4194304"` // 4MB
-	MaxSendMsgSize        uint          `yaml:"max_send_msg_size" env-default:"4194304"` // 4MB
-	Keepalive             Keepalive     `yaml:"keepalive"`                               // Connection keepalive settings
-	TLS                   GrpcTLS       `yaml:"tls"`                                     // TLS configuration
-	Health                Health        `yaml:"health"`                                  // Health check settings
-	Logging               Logging       `yaml:"logging"`                                 // Logging configuration
-	Shutdown              Shutdown      `yaml:"shutdown"`                                // Graceful shutdown settings
+	Host                  string            `yaml:"host" env-required:"true"`
+	Port                  uint              `yaml:"port" env-required:"true"`
+	MaxConnectionAge      time.Duration     `yaml:"max_connection_age" env-default:"30m"`
+	MaxConnectionAgeGrace time.Duration     `yaml:"max_connection_grace" env-default:"5m"`
+	MaxConcurrentStreams  uint              `yaml:"max_concurrent_streams" env-default:"1000"`
+	MaxRecvMsgSize        uint              `yaml:"max_recv_msg_size" env-default:"4194304"` // 4MB
+	MaxSendMsgSize        uint              `yaml:"max_send_msg_size" env-default:"4194304"` // 4MB
+	Keepalive             Keepalive         `yaml:"keepalive"`                               // Connection keepalive settings
+	TLS                   GrpcTLS           `yaml:"tls"`                                     // TLS configuration
+	Health                Health            `yaml:"health"`                                  // Health check settings
+	Logging               commoncfg.Logging `yaml:"logging"`                                 // Logging configuration
+	Shutdown              Shutdown          `yaml:"shutdown"`                                // Graceful shutdown settings
 }
 
 // Health contains gRPC health check server configuration.
@@ -77,13 +82,6 @@ type ServerParameters struct {
 	MaxConnectionIdle time.Duration `yaml:"max_connection_idle" env-default:"15m"`
 	Time              time.Duration `yaml:"time" end-default:"2h"`     // Ping interval
 	Timeout           time.Duration `yaml:"timeout" env-default:"20s"` // Ping timeout
-}
-
-// Logging contains logging configuration.
-type Logging struct {
-	Level  string `yaml:"level" env-default:"info"`    // Log level (debug, info, warn, error)
-	Format string `yaml:"format" env-default:"json"`   // Log format (json, text)
-	Output string `yaml:"output" env-default:"stdout"` // Output destination
 }
 
 // Marshaler controls JSON marshaling behavior.
