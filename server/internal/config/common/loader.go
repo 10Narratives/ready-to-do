@@ -7,10 +7,14 @@ import (
 	"github.com/ilyakaznacheev/cleanenv"
 )
 
-// ConfigLoader is a generic configuration loader for any type T.
-// It provides methods to load configuration from files with panic on errors.
+// ConfigLoader loads configuration structs from files using cleanenv.
+// Use MustLoad() to load from --config flag, or MustLoadFromFile(path) for a specific file.
+// Panics if the file is missing or invalid.
 type ConfigLoader[T any] struct{}
 
+// ConfigLoader is a generic helper for loading configuration structs from YAML files using cleanenv.
+// Use MustLoad() to load from a file specified by the --config flag, or MustLoadFromFile(path) to load from a specific file path.
+// Both methods panic if the file is missing or invalid.
 func (cl *ConfigLoader[T]) MustLoad() *T {
 	var path string
 	flag.StringVar(&path, "config", "", "path to configuration file")
@@ -19,6 +23,8 @@ func (cl *ConfigLoader[T]) MustLoad() *T {
 	return cl.MustLoadFromFile(path)
 }
 
+// MustLoadFromFile loads the config struct from the given file path using cleanenv.
+// Panics if the file does not exist or is invalid.
 func (cl *ConfigLoader[T]) MustLoadFromFile(path string) *T {
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		panic("config file does not exist: " + path)
