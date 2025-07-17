@@ -5,54 +5,95 @@ package tracker.v1;
 option go_package = "github.com/10Narratives/ready-to-do/contracts/gen/go/tracker/v1;trackerv1";
 
 import "google/api/annotations.proto";
-
+import "google/api/field_behavior.proto";
+import "google/protobuf/timestamp.proto";
+import "google/api/resource.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/field_mask.proto";
+import "validate/validate.proto";
 
+// ProjectService is the service for managing projects.
 service ProjectService {
+  // ListProjects lists projects.
   rpc ListProjects(ListProjectsRequest) returns (ListProjectsResponse) {
     option (google.api.http) = {
-      get: "/v1alpha1/Projects"
+      get : "/v1/Projects"
     };
   }
 
+  // GetProject gets a project.
   rpc GetProject(GetProjectRequest) returns (Project) {
     option (google.api.http) = {
-      get: "/v1alpha1/{name=Projects/*}"
+      get : "/v1/{name=Projects/*}"
     };
   }
 
+  // CreateProject creates a project.
   rpc CreateProject(CreateProjectRequest) returns (Project) {
     option (google.api.http) = {
-      post: "/v1alpha1/Projects"
-      body: "project"
+      post : "/v1/Projects"
+      body : "project"
     };
   }
 
+  // UpdateProject updates a project.
   rpc UpdateProject(UpdateProjectRequest) returns (Project) {
     option (google.api.http) = {
-      patch: "/v1alpha1/{project.name=Projects/*}"
-      body: "project"
+      patch : "/v1/{project.name=Projects/*}"
+      body : "project"
     };
   }
 
+  // DeleteProject deletes a project.
   rpc DeleteProject(DeleteProjectRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      delete: "/v1alpha1/{name=Projects/*}"
+      delete : "/v1/{name=Projects/*}"
     };
   }
 }
 
 message Project {
-  string name = 1;
+  option (google.api.resource) = {
+    type : "tasks.readytogo.com/Project"
+    pattern : "projects/{project}"
+  };
+
+  string name = 1 [ (google.api.field_behavior) = IDENTIFIER ];
   string display_name = 2;
   string description = 3;
+  string color_tag = 4;
+  google.protobuf.Timestamp created_at = 5;
+  google.protobuf.Timestamp updated_at = 6;
+
+  enum State {
+    STATE_UNSPECIFIED = 0;
+    ACTIVE = 1;
+    ARCHIVED = 2;
+    DELETED = 3;
+  }
+
+  State state = 7;
 }
 
 message ListProjectsRequest {
-  string parent = 1;
-  int32 page_size = 2;
-  string page_token = 3;
+  int32 page_size = 1 [
+    (google.api.field_behavior) = OPTIONAL,
+    (validate.rules).int32.gte = 1
+  ];
+  string page_token = 2 [ (google.api.field_behavior) = OPTIONAL ];
+  string filter = 3 [ (google.api.field_behavior) = OPTIONAL ];
+  string order_by = 4 [
+    (google.api.field_behavior) = OPTIONAL,
+    (validate.rules).string = { in: ["created_at", "updated_at", "display_name", "state"] }
+  ];
+  bool show_archived = 5 [
+    (google.api.field_behavior) = OPTIONAL,
+    (validate.rules).bool.const = true
+  ];
+  bool show_deleted = 6 [
+    (google.api.field_behavior) = OPTIONAL,
+    (validate.rules).bool.const = true
+  ];
 }
 
 message ListProjectsResponse {
@@ -61,20 +102,29 @@ message ListProjectsResponse {
 }
 
 message GetProjectRequest {
-  string name = 1;
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type : "tasks.readytogo.com/Project"}
+  ];
 }
 
 message CreateProjectRequest {
-  string parent = 1;
-  string project_id = 2;
-  Project project = 3;
+  string project_id = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (validate.rules).string.uuid = true
+  ];
+  Project project = 2 [ (google.api.field_behavior) = REQUIRED ];
 }
 
 message UpdateProjectRequest {
-  Project project = 1;
-  google.protobuf.FieldMask update_mask = 2;
+  Project project = 1 [ (google.api.field_behavior) = REQUIRED ];
+  google.protobuf.FieldMask update_mask = 2
+      [ (google.api.field_behavior) = REQUIRED ];
 }
 
 message DeleteProjectRequest {
-  string name = 1;
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type : "tasks.readytogo.com/Project"}
+  ];
 }
