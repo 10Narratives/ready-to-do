@@ -1,89 +1,36 @@
-# Binaries for programs
+# If you prefer the allow list template instead of the deny list, see community template:
+# https://github.com/github/gitignore/blob/main/community/Golang/Go.AllowList.gitignore
+#
+# Binaries for programs and plugins
 *.exe
+*.exe~
 *.dll
 *.so
 *.dylib
 
-# Compiled binaries and build artifacts
-bin/
-pkg/
-# For Go modules, the module cache
-go.mod.sum
-go.sum
+# Test binary, built with `go test -c`
+*.test
+
+# Code coverage profiles and other test artifacts
+*.out
+coverage.*
+*.coverprofile
+profile.cov
+
+# Dependency directories (remove the comment below to include it)
+# vendor/
+
+# Go workspace file
+go.work
 go.work.sum
 
-# Dependency directories (if not using Go modules or for specific setups)
-vendor/
+# env file
+.env
 
-# Test results
-*.test
-*.out
-
-# Editor/IDE specific files
-.idea/
+# Editor/IDE
+# .idea/
 .vscode/
-.DS_Store
-*.sublime-project
-*.sublime-workspace
 
-# Log files
-*.log
-
-# Environment variables
-.env
-
-# Byte-code files
-*.pyc
-__pycache__/
-.pytest_cache/
-.mypy_cache/
-
-# Virtual environment
-.venv/
-venv/
-env/
-/bin/
-/include/
-/lib/
-/share/
-
-# Editor-specific files
-.idea/  # PyCharm
-.vscode/ # VS Code
-*.sublime-project
-*.sublime-workspace
-
-# Operating System files
-.DS_Store
-Thumbs.db
-
-# Build artifacts
-dist/
-build/
-*.egg-info/
-
-# Logs
-*.log
-
-# Database files
-*.sqlite3
-*.db
-
-# Data files
-*.csv
-*.json
-*.xml
-*.yaml
-
-# Jupyter Notebook files
-.ipynb_checkpoints/
-
-# Miscellaneous
-.env
-.flaskenv
-
-# Generated artifacts
+!common/*
+contracts/vendor
 contracts/gen
-
-# Server configuration files examples
-!server/config/*.example.yaml
