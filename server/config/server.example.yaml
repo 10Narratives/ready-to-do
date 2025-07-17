@@ -1,0 +1,35 @@
+transport:
+  grpc:
+    host: 0.0.0.0      
+    port: 55054        
+    timeout: 4s        
+    max_recv_msg_size: 4194304
+    max_send_msg_size: 4194304
+    reflection: true   
+    tls:
+      enabled: false   
+      cert_file: ""    
+      key_file: ""     
+
+    logging:
+      level: info
+      format: pretty
+      output: stdout
+
+database:
+  host: localhost
+  port: 5432
+  user: postgres
+  password: secret
+  dbname: mydb
+  sslmode: disable
+
+  logging:
+    level: info
+    format: pretty
+    output: stdout
+
+logging:
+  level: info
+  format: pretty
+  output: stdout
