@@ -37,7 +37,7 @@ func TestServerAPI_CreateProject(t *testing.T) {
 			ColorTag:    "#000000",
 			CreatedAt:   time.Now().UTC(),
 			UpdatedAt:   time.Now().UTC(),
-			State:       "projectmodels.ActiveProjectState",
+			State:       1000,
 		}
 	)
 

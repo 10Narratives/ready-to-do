@@ -9,13 +9,13 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-type ProjectState string
+type ProjectState int
 
 const (
-	UnspecifiedProjectState ProjectState = "unspecified"
-	ActiveProjectState      ProjectState = "active"
-	ArchivedProjectState    ProjectState = "archived"
-	DeletedprojectState     ProjectState = "deleted"
+	UnspecifiedProjectState ProjectState = iota
+	ActiveProjectState
+	ArchivedProjectState
+	DeletedprojectState
 )
 
 func ProjectStateFromGRPC(src tasksv1.Project_State) (ProjectState, error) {
