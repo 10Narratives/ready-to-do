@@ -35,4 +35,4 @@ go.work.sum
 contracts/vendor
 contracts/gen
 
-database/
+database/data/

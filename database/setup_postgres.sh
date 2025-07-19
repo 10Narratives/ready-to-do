@@ -10,8 +10,8 @@ set -e
 DB_NAME=${1:-db}
 DB_USER=${2:-postgres}
 DB_PASSWORD=${3:-postgres}
-PROJECT_DIR=$(pwd)
-DATA_DIR="$PROJECT_DIR/database"
+DIR=$(pwd)
+DATA_DIR="$DIR/data"
 CONTAINER_NAME="postgres_${DB_NAME}"
 PORT=5432
 
@@ -40,7 +40,6 @@ docker run --name "$CONTAINER_NAME" \
     -p "$PORT":5432 \
     -v "$DATA_DIR":/var/lib/postgresql/data \
     -d postgres
-# sleep 10
 echo "The container started successfully"
 
 echo "Initializing tables"
