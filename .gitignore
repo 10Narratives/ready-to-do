@@ -33,3 +33,4 @@ go.work.sum
 
 !common/*
 contracts/vendor
+database/data/
