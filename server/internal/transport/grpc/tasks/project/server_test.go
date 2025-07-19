@@ -62,7 +62,7 @@ func TestServerAPI_CreateProject(t *testing.T) {
 					m.On("Create", mock.Anything, projectapi.CreateProjectArgs{
 						ProjectID: projectID,
 						Project:   project,
-					}).Return(project, nil)
+					}).Return(nil)
 				},
 			},
 			args: args{
@@ -122,7 +122,7 @@ func TestServerAPI_CreateProject(t *testing.T) {
 					m.On("Create", mock.Anything, projectapi.CreateProjectArgs{
 						ProjectID: projectID,
 						Project:   project,
-					}).Return(nil, status.New(codes.FailedPrecondition, "some failed precondition"))
+					}).Return(status.New(codes.FailedPrecondition, "some failed precondition"))
 				},
 			},
 			args: args{
@@ -142,7 +142,7 @@ func TestServerAPI_CreateProject(t *testing.T) {
 					m.On("Create", mock.Anything, projectapi.CreateProjectArgs{
 						ProjectID: projectID,
 						Project:   project,
-					}).Return(nil, status.New(codes.Internal, "some intrenal error"))
+					}).Return(status.New(codes.Internal, "some intrenal error"))
 				},
 			},
 			args: args{

@@ -16,7 +16,7 @@ import (
 type ProjectService interface {
 	// Create creates a new project using the provided arguments.
 	// Returns the created project model and a gRPC status indicating the result.
-	Create(ctx context.Context, args CreateProjectArgs) (*projectmodels.Project, *status.Status)
+	Create(ctx context.Context, args CreateProjectArgs) *status.Status
 }
 
 type CreateProjectArgs struct {
@@ -60,14 +60,13 @@ func (s *ServerAPI) CreateProject(ctx context.Context, req *tasksv1.CreateProjec
 		return nil, status.Errorf(codes.InvalidArgument, "invalid request: %v", err)
 	}
 
-	created, stat := s.service.Create(ctx, args)
-	if stat.Code() == codes.FailedPrecondition {
+	if stat := s.service.Create(ctx, args); stat.Code() == codes.FailedPrecondition {
 		return nil, status.Errorf(codes.FailedPrecondition, "failed precondition for project creation: %v", err)
 	} else if stat != nil {
 		return nil, status.Errorf(codes.Internal, "cannot create new project: %v", err)
 	}
 
-	return projectmodels.ProjectToGRPC(created), nil
+	return projectmodels.ProjectToGRPC(args.Project), nil
 }
 
 func (s *ServerAPI) DeleteProject(context.Context, *tasksv1.DeleteProjectRequest) (*emptypb.Empty, error) {
