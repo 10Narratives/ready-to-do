@@ -165,9 +165,7 @@ generate_swagger() {
 }
 
 generate_grpc_gateway() {
-    GEN_DIR="$GEN_ROOT_DIR/grpc-gateway"
-    rm -rf "$GEN_DIR"
-    mkdir -p "$GEN_DIR"
+    GEN_DIR="$GEN_ROOT_DIR/go"
     local success=true
     local errors=""
 

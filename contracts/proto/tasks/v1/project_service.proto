@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-package tracker.v1;
+package tasks.v1;
 
-option go_package = "github.com/10Narratives/ready-to-do/contracts/gen/go/tracker/v1;trackerv1";
+option go_package = "github.com/10Narratives/ready-to-do/contracts/gen/go/tasks/v1;tasksv1";
 
 import "google/api/annotations.proto";
 import "google/api/field_behavior.proto";

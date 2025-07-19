@@ -1,6 +1,7 @@
 package sl
 
 import (
+	"errors"
 	"io"
 	"log/slog"
 	"os"
@@ -61,50 +62,58 @@ func WithOutput(output string) LoggerOption {
 	}
 }
 
-func MustLogger(opts ...LoggerOption) *slog.Logger {
+func New(opts ...LoggerOption) (*slog.Logger, error) {
 	options := defaultOptions()
 	for _, opt := range opts {
 		opt(options)
 	}
 
-	output := createOutput(options)
-	handler := createHandler(options.format, output, options.level)
-	return slog.New(handler)
+	output, err := createOutput(options)
+	if err != nil {
+		return nil, err
+	}
+
+	handler, err := createHandler(options.format, output, options.level)
+	if err != nil {
+		return nil, err
+	}
+
+	return slog.New(handler), nil
 }
 
-func createOutput(opts *LoggerOptions) io.Writer {
+func createOutput(opts *LoggerOptions) (io.Writer, error) {
 	if opts.output == "stdout" {
-		return os.Stdout
+		return os.Stdout, nil
 	}
 
 	dir := filepath.Dir(opts.output)
 	if err := os.MkdirAll(dir, 0755); err != nil {
-		panic("failed to create log directory: " + err.Error())
+		return nil, err
 	}
 
 	return &lumberjack.Logger{
 		Filename:  opts.output,
 		LocalTime: true,
-	}
+	}, nil
 }
 
-func createHandler(format string, output io.Writer, level slog.Level) slog.Handler {
+func createHandler(format string, output io.Writer, level slog.Level) (slog.Handler, error) {
 	opts := &slog.HandlerOptions{
 		Level: level,
 	}
 
 	switch format {
 	case "json":
-		return slog.NewJSONHandler(output, opts)
+		return slog.NewJSONHandler(output, opts), nil
 	case "pretty":
 		return slogpretty.NewPrettyLogger(&slogpretty.PrettyHandlerOptions{
 			SlogOpts: opts,
-		}, output).Handler()
+		}, output).Handler(), nil
 	case "plain":
-		return slog.NewTextHandler(output, opts)
+		return slog.NewTextHandler(output, opts), nil
 	case "discard":
-		return slogdiscard.NewDiscardLogger().Handler()
+		return slogdiscard.NewDiscardLogger().Handler(), nil
 	default:
-		panic("unsupported log format: " + format)
+		return nil, errors.New("unsupported format")
 	}
 }
