@@ -34,3 +34,5 @@ go.work.sum
 !common/*
 contracts/vendor
 contracts/gen
+
+database/
